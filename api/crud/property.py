@@ -1,8 +1,16 @@
+from http import HTTPStatus
+
+from fastapi import HTTPException
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from ..db.models import Property
-from ..schemas.property import PropertyCreate, PropertyFilters, SortDirection
+from ..db.models import Property, Reservation
+from ..schemas.property import (
+    PropertyAvailabilityFilters,
+    PropertyCreate,
+    PropertyFilters,
+    SortDirection,
+)
 
 
 class PropertyCRUD:
@@ -63,3 +71,41 @@ class PropertyCRUD:
                 )
 
         return db_properties.offset(filters.skip).limit(filters.limit).all()
+
+    @staticmethod
+    def get_property_availability(
+        filters: PropertyAvailabilityFilters, session: Session
+    ) -> None:
+        db_property = (
+            session.query(Property)
+            .filter(Property.id == filters.property_id)
+            .first()
+        )
+        if not db_property:
+            raise HTTPException(
+                detail='Esta propriedade não existe.',
+                status_code=HTTPStatus.NOT_FOUND,
+            )
+
+        if filters.guests_quantity > db_property.capacity:
+            raise HTTPException(
+                detail='O número de residentes é maior que a capacidade.',
+                status_code=HTTPStatus.CONFLICT,
+            )
+
+        already_reservation_db = (
+            session.query(Reservation)
+            .filter(
+                Reservation.property_id == filters.property_id,
+                Reservation.end_date > filters.start_date,
+                Reservation.start_date < filters.end_date,
+            )
+            .first()
+        )
+
+        if not already_reservation_db:
+            return None
+        raise HTTPException(
+            detail='Está proprieda não está disponível nesse perído',
+            status_code=HTTPStatus.CONFLICT,
+        )

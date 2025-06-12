@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from ..crud.property import PropertyCRUD
 from ..db.database import get_session
 from ..schemas.property import (
+    PropertyAvailabilityFilters,
     PropertyCreate,
     PropertyFilters,
     PropertyResponse,
@@ -35,6 +36,17 @@ def read_properties(
     filters: PropertyFilters = Depends(),
     session: Session = Depends(get_session),
 ):
-    return PropertyCRUD.get_properties(
+    return PropertyCRUD.get_properties(session=session, filters=filters)
+
+
+@router.get(
+    '/api/v1/properties/availability',
+    status_code=HTTPStatus.NO_CONTENT,
+)
+def read_property_availability(
+    filters: PropertyAvailabilityFilters = Depends(),
+    session: Session = Depends(get_session),
+):
+    return PropertyCRUD.get_property_availability(
         session=session, filters=filters
     )

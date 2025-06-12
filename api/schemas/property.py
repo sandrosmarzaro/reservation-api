@@ -44,3 +44,10 @@ class PropertyFilters(BaseModel):
 
     sort_by_capacity: SortDirection | None = None
     sort_by_price: SortDirection | None = None
+
+
+class PropertyAvailabilityFilters(BaseModel):
+    property_id: int
+    start_date: str
+    end_date: str
+    guests_quantity: int
