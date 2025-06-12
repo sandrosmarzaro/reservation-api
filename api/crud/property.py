@@ -1,7 +1,7 @@
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from ..db.models import Property
+from ..db.models import Property, PropertyStatus
 from ..schemas.property import PropertyCreate, PropertyFilters, SortDirection
 
 
@@ -16,7 +16,7 @@ class PropertyCRUD:
         return db_property
 
     @staticmethod
-    def get_properties(
+    def get_available_properties(
         session: Session, filters: PropertyFilters
     ) -> list[Property]:
         db_properties = session.query(Property)
@@ -45,6 +45,10 @@ class PropertyCRUD:
             db_properties = db_properties.filter(
                 Property.price_per_night <= filters.max_price_per_night
             )
+
+        db_properties = db_properties.filter(
+            Property.status == PropertyStatus.AVAILABLE
+        )
 
         if filters.sort_by_capacity:
             if filters.sort_by_capacity == SortDirection.DESC:
