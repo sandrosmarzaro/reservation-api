@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api.routers import property
+from api.routers import property, reservation
 
 from .db.base import Base
 from .db.database import engine
@@ -14,3 +14,4 @@ app = FastAPI(
 )
 
 app.include_router(property.router)
+app.include_router(reservation.router)
