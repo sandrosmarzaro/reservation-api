@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from ..db.models import Property, Reservation
+from ..db.models import Property, Reservation, ReservationStatus
 from ..schemas.property import (
     PropertyAvailabilityFilters,
     PropertyCreate,
@@ -97,6 +97,7 @@ class PropertyCRUD:
             session.query(Reservation)
             .filter(
                 Reservation.property_id == filters.property_id,
+                Reservation.status == ReservationStatus.CONFIRMED,
                 Reservation.end_date > filters.start_date,
                 Reservation.start_date < filters.end_date,
             )

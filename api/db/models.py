@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
+from enum import Enum as PyEnum
+
+from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -24,6 +26,11 @@ class Property(Base):
     )
 
 
+class ReservationStatus(str, PyEnum):
+    CONFIRMED = 'confirmed'
+    CANCELLED = 'cancelled'
+
+
 class Reservation(Base):
     __tablename__ = 'reservations'
 
@@ -34,6 +41,11 @@ class Reservation(Base):
     end_date = Column(Date, nullable=False)
     guests_quantity = Column(Integer, nullable=False)
     total_price = Column(Float, nullable=False)
+    status = Column(
+        Enum(ReservationStatus),
+        nullable=False,
+        default=ReservationStatus.CONFIRMED,
+    )
 
     property_id = Column(Integer, ForeignKey('properties.id'))
     property = relationship('Property', back_populates='reservations')
