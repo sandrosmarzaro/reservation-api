@@ -35,6 +35,6 @@ def read_properties(
     filters: PropertyFilters = Depends(),
     session: Session = Depends(get_session),
 ):
-    return PropertyCRUD.get_available_properties(
+    return PropertyCRUD.get_properties(
         session=session, filters=filters
     )

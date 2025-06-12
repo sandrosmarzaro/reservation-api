@@ -2,8 +2,6 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from ..db.models import PropertyStatus
-
 
 class PropertyBase(BaseModel):
     title: str
@@ -24,7 +22,6 @@ class PropertyCreate(PropertyBase):
 
 class PropertyResponse(PropertyBase):
     id: int
-    status: PropertyStatus
 
     class Config:
         from_attributes = True

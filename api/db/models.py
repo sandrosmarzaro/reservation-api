@@ -1,14 +1,7 @@
-from enum import Enum as PyEnum
-
-from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
-
-
-class PropertyStatus(PyEnum):
-    AVAILABLE = 'available'
-    UNAVAILABLE = 'unavailable'
 
 
 class Property(Base):
@@ -25,7 +18,6 @@ class Property(Base):
     rooms = Column(Integer, nullable=False)
     capacity = Column(Integer, nullable=False)
     price_per_night = Column(Float, nullable=False)
-    status = Column(Enum(PropertyStatus), default=PropertyStatus.AVAILABLE)
 
     reservations = relationship(
         'Reservation', back_populates='property', cascade='all, delete-orphan'
