@@ -40,10 +40,9 @@ def session():
     try:
         yield session
     finally:
-        session.rollback()
         session.close()
-        engine.dispose()
         Base.metadata.drop_all(engine)
+        engine.dispose()
 
 
 @contextmanager
@@ -67,6 +66,14 @@ def mock_db_time():
 
 
 @pytest.fixture
+def mock_date_today(mocker):
+    mock_date = mocker.patch('api.schemas.property.datetime')
+    mock_date.date.today.return_value = datetime.date(2025, 6, 12)
+    mock_date = mocker.patch('api.schemas.reservation.datetime')
+    mock_date.date.today.return_value = datetime.date(2025, 6, 12)
+
+
+@pytest.fixture
 def property(session: Session):
     property_db = Property(
         title='Local',
@@ -78,7 +85,7 @@ def property(session: Session):
         country='Country',
         rooms=1,
         capacity=2,
-        price_per_night=50.0
+        price_per_night=50.0,
     )
     session.add(property_db)
     session.commit()
@@ -87,14 +94,15 @@ def property(session: Session):
 
 
 @pytest.fixture
-def reservation(session: Session):
+def reservation(session: Session, property, mock_date_today):
     reservation = Reservation(
         property_id=1,
         client_name='John Doe',
         client_email='john@doe.com',
-        start_date=datetime(2025, 6, 14),
-        end_date=datetime(2025, 6, 15),
+        start_date=datetime.date(2025, 6, 14),
+        end_date=datetime.date(2025, 6, 15),
         guests_quantity=1,
+        total_price=50.0
     )
     session.add(reservation)
     session.commit()
