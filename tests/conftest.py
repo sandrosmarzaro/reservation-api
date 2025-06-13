@@ -40,6 +40,7 @@ def session():
     try:
         yield session
     finally:
+        session.rollback()
         session.close()
         engine.dispose()
         Base.metadata.drop_all(engine)
@@ -67,7 +68,7 @@ def mock_db_time():
 
 @pytest.fixture
 def property(session: Session):
-    property = Property(
+    property_db = Property(
         title='Local',
         address_street='Street',
         address_number='1',
@@ -79,10 +80,10 @@ def property(session: Session):
         capacity=2,
         price_per_night=50.0
     )
-    session.add(property)
+    session.add(property_db)
     session.commit()
-    session.refresh(property)
-    return property
+    session.refresh(property_db)
+    return property_db
 
 
 @pytest.fixture
