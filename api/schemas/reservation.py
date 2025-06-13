@@ -17,6 +17,8 @@ class ReservationBase(BaseModel):
         gt=0, description='Número de pessoas deve ser maior que zero'
     )
 
+
+class ReservationCreate(ReservationBase):
     @field_validator('end_date')
     def validate_end_date(cls, v: datetime.date, info) -> datetime.date:
         if start_date := info.data.get('start_date'):
@@ -36,9 +38,6 @@ class ReservationBase(BaseModel):
                 status_code=HTTPStatus.CONFLICT,
             )
         return v
-
-
-class ReservationCreate(ReservationBase):
     pass
 
 
