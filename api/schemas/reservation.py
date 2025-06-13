@@ -19,8 +19,7 @@ class ReservationBase(BaseModel):
 
     @field_validator('end_date')
     def validate_end_date(cls, v: datetime.date, info) -> datetime.date:
-        start_date = info.data.get('start_date')
-        if start_date:
+        if start_date := info.data.get('start_date'):
             if v <= start_date:
                 raise HTTPException(
                     detail='A data de fim deve ser maior que a de início.',
